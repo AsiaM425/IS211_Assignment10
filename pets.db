@@ -1,0 +1,27 @@
+import sqlite3
+
+# Connect to the database
+conn = sqlite3.connect('pets.db')
+c = conn.cursor()
+
+# Data to be inserted
+data = [
+    (1, 'James', 'Smith', 41),
+    (2, 'Diana', 'Greene', 23),
+    (3, 'Sara', 'White', 27),
+    (4, 'William', 'Gibson', 23),
+    (1, 'Rusty', 'Dalmation', 4, 1),
+    (2, 'Bella', 'Alaskan Malamute', 3, 0),
+    (3, 'Max', 'Cocker Spaniel', 1, 0),
+    (4, 'Rocky', 'Beagle', 7, 0),
+    (5, 'Rufus', 'Cocker Spaniel', 1, 0),
+    (6, 'Spot', 'Bloodhound', 2, 1),
+]
+
+# Insert data into tables
+for row in data:
+    c.execute("INSERT INTO person_pet VALUES (?, ?)", (row[0], row[1]))
+
+# Commit changes and close connection
+conn.commit()
+conn.close()
