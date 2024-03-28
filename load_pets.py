@@ -1,24 +1,33 @@
 import sqlite3
+
+# Connect to the database
 conn = sqlite3.connect('pets.db')
 c = conn.cursor()
-# Insert the person tuples
-c.execute("INSERT INTO person VALUES (1, 'James', 'Smith', 41)")
-c.execute("INSERT INTO person VALUES (2, 'Diana', 'Greene', 23)")
-c.execute("INSERT INTO person VALUES (3, 'Sara', 'White', 27)")
-c.execute("INSERT INTO person VALUES (4, 'William', 'Gibson', 23)")
-# Insert the pet tuples
-c.execute("INSERT INTO pet VALUES (1, 'Rusty', 'Dalmation', 4, 1)")
-c.execute("INSERT INTO pet VALUES (2, 'Bella', 'Alaskan Malamute', 3, 0)")
-c.execute("INSERT INTO pet VALUES (3, 'Max', 'Cocker Spaniel', 1, 0)")
-c.execute("INSERT INTO pet VALUES (4, 'Rocky', 'Beagle', 7, 0)")
-c.execute("INSERT INTO pet VALUES (5, 'Rufus', 'Cocker Spaniel', 1, 0)")
-c.execute("INSERT INTO pet VALUES (6, 'Spot', 'Bloodhound', 2, 1)")
-# Insert the person_pet tuples
-c.execute("INSERT INTO person_pet VALUES (1, 1)")
-c.execute("INSERT INTO person_pet VALUES (1, 2)")
-c.execute("INSERT INTO person_pet VALUES (2, 3)")
-c.execute("INSERT INTO person_pet VALUES (2, 4)")
-c.execute("INSERT INTO person_pet VALUES (3, 5)")
-c.execute("INSERT INTO person_pet VALUES (4, 6)")
-conn.commit()
+
+while True:
+    # Ask user for person's ID number
+    person_id = int(input("Enter person's ID number (-1 to exit): "))
+
+    # Check if user wants to exit
+    if person_id == -1:
+        break
+
+    # Query person's data
+    c.execute("SELECT first_name, last_name, age FROM person WHERE id=?", (person_id,))
+    person_data = c.fetchone()
+
+    # If person exists, print their data
+    if person_data:
+        print(f"{person_data[0]} {person_data[1]}, {person_data[2]} years old")
+
+        # Query and print person's pets
+        c.execute("SELECT pet.name, pet.breed, pet.age FROM pet JOIN person_pet ON pet.id = person_pet.pet_id WHERE person_pet.person_id=?", (person_id,))
+        pets_data = c.fetchall()
+        for pet in pets_data:
+            print(f"Owned {pet[0]}, a {pet[1]}, that is {pet[2]} years old")
+    else:
+        print("Person not found.")
+
+# Close connection
 conn.close()
+
